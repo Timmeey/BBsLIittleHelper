@@ -2,6 +2,7 @@ package de.timmeey.eve.bb;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +19,9 @@ public class BbLittleHelperApplication{
 
 
 	@RequestMapping("/")
-	public Principal main(Principal principal) {
-		System.out.println(principal);
-		return principal;
+	public String main(Principal principal) {
+		((FakeAuthenticatedCharacter) ((OAuth2Authentication) principal).getPrincipal()).doRefreshToken();
+		return ((OAuth2Authentication) principal).getPrincipal().toString();
 	}
 }
 
