@@ -1,0 +1,17 @@
+security:
+  oauth2:
+    client:
+      clientId: d9dfc6d6b4a04084bc56efb678af4fad
+      clientSecret: 7SnWsgLjNIkdQUk8c53NRbeKhrg2XOEyw9vnMNRr
+#      accessTokenUri: https://login.eveonline.com/oauth/token
+      accessTokenUri: http://localhost:8081
+      userAuthorizationUri: https://login.eveonline.com/oauth/authorize
+      scope: publicData characterLocationRead characterNavigationWrite fleetRead fleetWrite esi-location.read_location.v1 esi-location.read_ship_type.v1 esi-fleets.read_fleet.v1 esi-fleets.write_fleet.v1 esi-ui.write_waypoint.v1
+      tokenName: oauth_token
+      authenticationScheme: query
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: https://login.eveonline.com/oauth/verify
+logging:
+  level:
+    org.springframework.security: DEBUG
