@@ -8,6 +8,7 @@ eve:
       tokenName: oauth_token, refresh_token
       authenticationScheme: header
       clientAuthenticationScheme: header
+      redirectToHost: http://localhost:8080
     resource:
       userInfoUri: https://login.eveonline.com/oauth/verify
 logging:
