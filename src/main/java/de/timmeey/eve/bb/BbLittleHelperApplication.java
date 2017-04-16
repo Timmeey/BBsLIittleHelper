@@ -80,6 +80,7 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	@Override
 	protected void onInit() {
 		this.addControllers(new LoginController(this.eveOAuth2Api, this.authenticatedCharacters));
+		this.addControllers(new CharacterInfoController());
 
 		ALL("/.*", routeContext -> {
 			log.info("Request for {} '{}' with: {}", routeContext.getRequestMethod(), routeContext.getRequestUri(),
