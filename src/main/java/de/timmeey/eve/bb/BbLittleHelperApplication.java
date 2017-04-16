@@ -8,6 +8,7 @@ import de.timmeey.eve.bb.AuthenticatedCharacter.LoginController;
 import de.timmeey.eve.bb.AuthenticatedCharacter.fake.FakeAuthenticatedCharacters;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2Api;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2ApiImplBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Pippo;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+@Slf4j
 public class BbLittleHelperApplication extends ControllerApplication {
 	private final AuthenticatedCharacters authenticatedCharacters;
 	private final EveOAuth2Api eveOAuth2Api;
@@ -78,6 +80,12 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	@Override
 	protected void onInit() {
 		this.addControllers(new LoginController(this.eveOAuth2Api, this.authenticatedCharacters));
+
+		ALL("/.*", routeContext -> {
+			log.info("Request for {} '{}' with: {}", routeContext.getRequestMethod(), routeContext.getRequestUri(),
+					routeContext.getRequest());
+			routeContext.next();
+		});
 	}
 }
 

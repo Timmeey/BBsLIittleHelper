@@ -22,7 +22,12 @@ public class EveAccessToken implements AccessToken {
 
 	public EveAccessToken(@NonNull final AccessTokenDTO dto, @NonNull final OAuth2Api oAuth2Api1) {
 		this.oAuth2Api = oAuth2Api1;
-		this.accessTokenString = accessTokenString;
+		try {
+			this.accessTokenString = Preconditions.checkNotNull(dto.getAccess_token());
+		} catch (NullPointerException e) {
+			log.error("AccessToken DTO was invalid", e);
+			throw e;
+		}
 		try {
 			this.tokenType = Preconditions.checkNotNull(dto.getToken_type());
 		} catch (NullPointerException e) {
@@ -67,5 +72,15 @@ public class EveAccessToken implements AccessToken {
 		AccessToken result = this.oAuth2Api.newAccessToken(this.refreshToken);
 		this.validUntil = result.validUntil();
 		this.accessTokenString = result.getAccessTokenString();
+	}
+
+	@Override
+	public String toString() {
+		return "EveAccessToken{" +
+				"tokenType='" + tokenType + '\'' +
+				", oAuth2Api=" + oAuth2Api +
+				", accessTokenString='" + accessTokenString + '\'' +
+				", validUntil=" + validUntil +
+				'}';
 	}
 }

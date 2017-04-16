@@ -7,11 +7,11 @@ import lombok.Value;
  */
 @Value
 public class OAuthCharacterDTO {
-	private long characterId;
-	private String characterName;
-	private String expiresOn;
-	private String scopes;
-	private String tokenType;
+	private long CharacterID;
+	private String CharacterName;
+	private String ExpiresOn;
+	private String Scopes;
+	private String TokenType;
 	private String CharacterOwnerHash;
 
 }

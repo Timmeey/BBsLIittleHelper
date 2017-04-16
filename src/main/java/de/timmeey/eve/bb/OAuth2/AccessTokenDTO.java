@@ -13,4 +13,13 @@ public class AccessTokenDTO {
 	private long expires_in;
 	private String refresh_token;
 
+	@Override
+	public String toString() {
+		return "AccessTokenDTO{" +
+				"access_token='" + access_token + '\'' +
+				", token_type='" + token_type + '\'' +
+				", expires_in=" + expires_in +
+				", refresh_token='" + "<Omitted>" + '\'' +
+				'}';
+	}
 }
