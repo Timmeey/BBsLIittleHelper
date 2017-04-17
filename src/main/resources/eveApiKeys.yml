@@ -1,0 +1,5 @@
+eve:
+  client:
+    clientId: xxxxxxxx
+    clientSecret: xxxxxxxx
+    redirectToHost: xxxxxxx

@@ -32,18 +32,22 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
 		Yaml yaml = new Yaml();
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-		Map<String, Object> config = (Map<String, Object>) yaml.load(classloader.getResourceAsStream("application.yml"));
+		Map<String, Object> generalConfig = (Map<String, Object>) yaml.load(classloader.getResourceAsStream
+				("application.yml"));
+		Map<String, Object> specificConfig = (Map<String, Object>) yaml.load(classloader.getResourceAsStream
+				("eveApiKeys.yml"));
+
 
 		EveOAuth2Api eveOAuth2Api = new EveOAuth2ApiImplBuilder()
-				.setAccessTokenURI(new URI(extractConfigs(config, "eve.client.accessTokenUri")))
-				.setClientId(extractConfigs(config, "eve.client.clientId"))
-				.setClientSecret(extractConfigs(config, "eve.client.clientSecret"))
+				.setAccessTokenURI(new URI(extractConfigs(generalConfig, "eve.client.accessTokenUri")))
+				.setClientId(extractConfigs(specificConfig, "eve.client.clientId"))
+				.setClientSecret(extractConfigs(specificConfig, "eve.client.clientSecret"))
 				.setGson(new Gson())
 				.setHttpClient(new OkHttpClient())
-				.setScopes(extractConfigs(config, "eve.client.scope"))
-				.setUserAuthorizationUri(new URI(extractConfigs(config, "eve.client.userAuthorizationUri")))
-				.setUserInfoUri(new URI(extractConfigs(config, "eve.resource.userInfoUri")))
-				.setRedirectToHost(extractConfigs(config, "eve.client.redirectToHost"))
+				.setScopes(extractConfigs(generalConfig, "eve.client.scope"))
+				.setUserAuthorizationUri(new URI(extractConfigs(generalConfig, "eve.client.userAuthorizationUri")))
+				.setUserInfoUri(new URI(extractConfigs(generalConfig, "eve.resource.userInfoUri")))
+				.setRedirectToHost(extractConfigs(specificConfig, "eve.client.redirectToHost"))
 				.createEveOAuth2ApiImpl();
 
 
