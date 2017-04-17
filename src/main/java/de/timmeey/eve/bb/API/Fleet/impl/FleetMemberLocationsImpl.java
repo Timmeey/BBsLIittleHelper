@@ -17,18 +17,15 @@ public class FleetMemberLocationsImpl implements FleetMemberLocations {
 	private final Stations stations;
 	private final Systems systems;
 	private final FleetsApi fleetsApi;
-	private final AccessToken accessToken;
 
-	public FleetMemberLocationsImpl(final Stations stations, final Systems systems, final FleetsApi fleetsApi, final
-	AccessToken accessToken) {
+	public FleetMemberLocationsImpl(final Stations stations, final Systems systems, final FleetsApi fleetsApi) {
 		this.stations = stations;
 		this.systems = systems;
 		this.fleetsApi = fleetsApi;
-		this.accessToken = accessToken;
 	}
 
 	@Override
-	public FleetMemberLocation byFleetMemberId(final Character character, final Fleet fleet) {
+	public FleetMemberLocation byFleetMemberId(final Character character, final Fleet fleet, AccessToken accessToken) {
 		return new FleetMemberLocationImpl(systems, stations, fleet, character, fleetsApi, accessToken);
 	}
 

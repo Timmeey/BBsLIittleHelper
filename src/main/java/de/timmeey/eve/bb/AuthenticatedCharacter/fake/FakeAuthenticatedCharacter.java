@@ -39,6 +39,11 @@ public class FakeAuthenticatedCharacter implements AuthenticatedCharacter {
 	}
 
 	@Override
+	public AccessToken accessToken() {
+		return oAuth2AccessToken;
+	}
+
+	@Override
 	public boolean equals(final Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

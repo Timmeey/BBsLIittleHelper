@@ -3,11 +3,26 @@ package de.timmeey.eve.bb;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
+import de.timmeey.eve.bb.API.Character.Characters;
+import de.timmeey.eve.bb.API.Character.CharactersImpl;
+import de.timmeey.eve.bb.API.Fleet.FleetMemberLocations;
+import de.timmeey.eve.bb.API.Fleet.FleetMembers;
+import de.timmeey.eve.bb.API.Fleet.Fleets;
+import de.timmeey.eve.bb.API.Fleet.impl.FleetMemberLocationsImpl;
+import de.timmeey.eve.bb.API.Fleet.impl.FleetMembersImpl;
+import de.timmeey.eve.bb.API.Fleet.impl.FleetsImpl;
+import de.timmeey.eve.bb.API.Type.Types;
+import de.timmeey.eve.bb.API.Type.TypesImpl;
+import de.timmeey.eve.bb.API.Universe.Stations;
+import de.timmeey.eve.bb.API.Universe.StationsImpl;
+import de.timmeey.eve.bb.API.Universe.System.Systems;
+import de.timmeey.eve.bb.API.Universe.System.SystemsImpl;
 import de.timmeey.eve.bb.AuthenticatedCharacter.AuthenticatedCharacters;
 import de.timmeey.eve.bb.AuthenticatedCharacter.LoginController;
 import de.timmeey.eve.bb.AuthenticatedCharacter.fake.FakeAuthenticatedCharacters;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2Api;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2ApiImplBuilder;
+import io.swagger.client.api.FleetsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 import ro.pippo.controller.ControllerApplication;
@@ -85,6 +100,15 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	protected void onInit() {
 		this.addControllers(new LoginController(this.eveOAuth2Api, this.authenticatedCharacters));
 		this.addControllers(new CharacterInfoController());
+		FleetsApi fleetsApi = new FleetsApi();
+		Systems systems = new SystemsImpl();
+		Stations stations = new StationsImpl();
+		FleetMemberLocations fleetMemberLocations = new FleetMemberLocationsImpl(stations, systems, fleetsApi);
+		Types types = new TypesImpl();
+		FleetMembers fleetMembers = new FleetMembersImpl(fleetsApi, types, systems, fleetMemberLocations);
+		Characters characters = new CharactersImpl();
+		Fleets fleets = new FleetsImpl(fleetsApi, fleetMembers, characters);
+		this.addControllers(new FleetController(fleets));
 
 		ALL("/.*", routeContext -> {
 			log.info("Request for {} '{}' with: {}", routeContext.getRequestMethod(), routeContext.getRequestUri(),

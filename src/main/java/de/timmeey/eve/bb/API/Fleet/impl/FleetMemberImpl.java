@@ -31,7 +31,7 @@ public class FleetMemberImpl implements FleetMember {
 
 	public FleetMemberImpl(final FleetsApi fleetsApi, final Character character, final Types types, final Systems
 			systems, final AccessToken accessToken,
-						   final Fleet fleet, final FleetMemberLocations fleetMemberLocations, final long id) {
+						   final Fleet fleet, final FleetMemberLocations fleetMemberLocations) {
 		this.fleetsApi = fleetsApi;
 		this.character = character;
 		this.types = types;
@@ -70,7 +70,7 @@ public class FleetMemberImpl implements FleetMember {
 
 	@Override
 	public FleetMemberLocation location() throws Exception {
-		return fleetMemberLocations.byFleetMemberId(character, fleet);
+		return fleetMemberLocations.byFleetMemberId(character, fleet, accessToken);
 	}
 
 	@Override

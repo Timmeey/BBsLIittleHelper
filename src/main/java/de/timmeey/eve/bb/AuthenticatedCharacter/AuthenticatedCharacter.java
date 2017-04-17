@@ -13,5 +13,7 @@ public interface AuthenticatedCharacter {
 
 	AuthenticatedCharacter newRefreshToken(AccessToken token);
 
+	AccessToken accessToken();
+
 	String toString();
 }

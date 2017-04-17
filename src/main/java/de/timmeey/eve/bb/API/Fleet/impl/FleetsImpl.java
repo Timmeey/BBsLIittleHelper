@@ -1,5 +1,6 @@
 package de.timmeey.eve.bb.API.Fleet.impl;
 
+import de.timmeey.eve.bb.API.Character.Characters;
 import de.timmeey.eve.bb.API.Fleet.Fleet;
 import de.timmeey.eve.bb.API.Fleet.FleetMembers;
 import de.timmeey.eve.bb.API.Fleet.Fleets;
@@ -12,19 +13,20 @@ import lombok.NonNull;
  */
 public class FleetsImpl implements Fleets {
 	private final FleetsApi fleetsApi;
-	private final AccessToken accessToken;
 	private final FleetMembers fleetMembers;
+	private final Characters characters;
 
-	public FleetsImpl(@NonNull final FleetsApi fleetsApi, @NonNull final AccessToken accessToken, final FleetMembers
-			fleetMembers) {
+	public FleetsImpl(@NonNull final FleetsApi fleetsApi, final FleetMembers
+			fleetMembers, final Characters characters) {
 
 		this.fleetsApi = fleetsApi;
-		this.accessToken = accessToken;
 		this.fleetMembers = fleetMembers;
+		this.characters = characters;
 	}
 
-	public Fleet byId(@NonNull long id) throws Exception {
-		return new FleetImpl(id, fleetsApi, accessToken, fleetMembers);
+	@Override
+	public Fleet byId(@NonNull long id, @NonNull AccessToken accessToken) throws Exception {
+		return new FleetImpl(id, fleetsApi, accessToken, fleetMembers, characters);
 	}
 
 
