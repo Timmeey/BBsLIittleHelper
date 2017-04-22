@@ -1,4 +1,4 @@
-package de.timmeey.eve.bb.API.Fleet.impl;
+package de.timmeey.eve.bb.API.Fleet.naiveImpl;
 
 import de.timmeey.eve.bb.API.Character.Character;
 import de.timmeey.eve.bb.API.Character.Portrait;
@@ -48,12 +48,12 @@ public class FleetMemberImpl implements FleetMember {
 	}
 
 	@Override
-	public String name() {
+	public String name() throws Exception {
 		return character.name();
 	}
 
 	@Override
-	public Corporation corporation() {
+	public Corporation corporation() throws Exception {
 		return character.corporation();
 	}
 

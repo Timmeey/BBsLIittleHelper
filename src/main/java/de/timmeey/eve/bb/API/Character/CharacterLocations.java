@@ -5,5 +5,5 @@ package de.timmeey.eve.bb.API.Character;
  */
 public interface CharacterLocations {
 
-	CharacterLocation byCharacterId(long id);
+	CharacterLocation byCharacter(Character character);
 }

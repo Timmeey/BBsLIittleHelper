@@ -1,4 +1,4 @@
-package de.timmeey.eve.bb.API.Fleet.impl;
+package de.timmeey.eve.bb.API.Fleet.naiveImpl;
 
 import de.timmeey.eve.bb.API.Character.Characters;
 import de.timmeey.eve.bb.API.Fleet.Fleet;

@@ -9,9 +9,9 @@ public interface Character {
 
 	long id();
 
-	String name();
+	String name() throws Exception;
 
-	Corporation corporation();
+	Corporation corporation() throws Exception;
 
 	Portrait portrait();
 

@@ -7,12 +7,12 @@ import java.net.URI;
  */
 public interface Portrait {
 
-	URI px512();
+	URI px512() throws Exception;
 
-	URI px256();
+	URI px256() throws Exception;
 
-	URI px128();
+	URI px128() throws Exception;
 
-	URI px64();
+	URI px64() throws Exception;
 
 }
