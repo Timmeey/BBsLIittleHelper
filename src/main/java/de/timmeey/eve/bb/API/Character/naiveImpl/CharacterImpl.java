@@ -8,6 +8,9 @@ import de.timmeey.eve.bb.API.Corporation.Corporations;
 import io.swagger.client.api.CharacterApi;
 import io.swagger.client.model.GetCharactersCharacterIdOk;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 /**
  * Created by timmeey on 17.04.17.
  */
@@ -43,6 +46,12 @@ public class CharacterImpl implements Character {
 	@Override
 	public Portrait portrait() {
 		return portraits.byCharacter(this);
+	}
+
+	@Override
+	public int ageInDays() throws Exception {
+		return (int) Instant.ofEpochMilli(getCharResponse().getBirthday().getMillis()).until(Instant.now(), ChronoUnit
+				.DAYS);
 	}
 
 

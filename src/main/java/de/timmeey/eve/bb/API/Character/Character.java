@@ -15,5 +15,7 @@ public interface Character {
 
 	Portrait portrait();
 
+	int ageInDays() throws Exception;
+
 
 }

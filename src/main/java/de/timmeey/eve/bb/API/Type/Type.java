@@ -8,4 +8,6 @@ public interface Type {
 	String description();
 
 	String name();
+
+	TypeGroup typeGroup();
 }

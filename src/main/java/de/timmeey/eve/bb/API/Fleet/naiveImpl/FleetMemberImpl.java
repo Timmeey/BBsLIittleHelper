@@ -63,6 +63,11 @@ public class FleetMemberImpl implements FleetMember {
 	}
 
 	@Override
+	public int ageInDays() throws Exception {
+		return character.ageInDays();
+	}
+
+	@Override
 	public Instant joinTime() throws Exception {
 		return Instant.ofEpochMilli(getFleetMemberResponse()
 				.getJoinTime().getMillis());

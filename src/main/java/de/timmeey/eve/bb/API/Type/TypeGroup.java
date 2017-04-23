@@ -1,6 +1,8 @@
 package de.timmeey.eve.bb.API.Type;
 
-import java.util.Collection;
+import io.swagger.client.ApiException;
+
+import java.util.stream.Stream;
 
 /**
  * Created by timmeey on 17.04.17.
@@ -9,8 +11,8 @@ public interface TypeGroup {
 
 	Category category();
 
-	String name();
+	String name() throws ApiException;
 
-	Collection<Type> types();
+	Stream<Type> types() throws ApiException;
 
 }
