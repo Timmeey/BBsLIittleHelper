@@ -4,13 +4,17 @@ package de.timmeey.eve.bb;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 import de.timmeey.eve.bb.API.Character.Characters;
-import de.timmeey.eve.bb.API.Character.CharactersImpl;
+import de.timmeey.eve.bb.API.Character.Portraits;
+import de.timmeey.eve.bb.API.Character.naiveImpl.CharactersImpl;
+import de.timmeey.eve.bb.API.Character.naiveImpl.PortraitsImpl;
+import de.timmeey.eve.bb.API.Corporation.Corporations;
+import de.timmeey.eve.bb.API.Corporation.naiveImpl.CorporationsImpl;
 import de.timmeey.eve.bb.API.Fleet.FleetMemberLocations;
 import de.timmeey.eve.bb.API.Fleet.FleetMembers;
 import de.timmeey.eve.bb.API.Fleet.Fleets;
-import de.timmeey.eve.bb.API.Fleet.impl.FleetMemberLocationsImpl;
-import de.timmeey.eve.bb.API.Fleet.impl.FleetMembersImpl;
-import de.timmeey.eve.bb.API.Fleet.impl.FleetsImpl;
+import de.timmeey.eve.bb.API.Fleet.naiveImpl.FleetMemberLocationsImpl;
+import de.timmeey.eve.bb.API.Fleet.naiveImpl.FleetMembersImpl;
+import de.timmeey.eve.bb.API.Fleet.naiveImpl.FleetsImpl;
 import de.timmeey.eve.bb.API.Type.Types;
 import de.timmeey.eve.bb.API.Type.TypesImpl;
 import de.timmeey.eve.bb.API.Universe.Stations;
@@ -22,16 +26,27 @@ import de.timmeey.eve.bb.AuthenticatedCharacter.LoginController;
 import de.timmeey.eve.bb.AuthenticatedCharacter.fake.FakeAuthenticatedCharacters;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2Api;
 import de.timmeey.eve.bb.OAuth2.EveOAuth2ApiImplBuilder;
+import de.timmeey.eve.bb.fleet.FleetController;
+import io.swagger.client.api.CharacterApi;
 import io.swagger.client.api.FleetsApi;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 import ro.pippo.controller.ControllerApplication;
 import ro.pippo.core.Pippo;
+import ro.pippo.core.RequestResponseFactory;
+import ro.pippo.session.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static de.timmeey.eve.bb.OAuth2.AuthenticatedController.AUTHENTICATED_SESSION_KEY;
 
 @Slf4j
 public class BbLittleHelperApplication extends ControllerApplication {
@@ -45,6 +60,7 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, URISyntaxException {
+		System.setProperty("pippo.mode", "dev");
 		Yaml yaml = new Yaml();
 		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 		Map<String, Object> generalConfig = (Map<String, Object>) yaml.load(classloader.getResourceAsStream
@@ -97,24 +113,72 @@ public class BbLittleHelperApplication extends ControllerApplication {
 	}
 
 	@Override
+	protected RequestResponseFactory createRequestResponseFactory() {
+		SessionDataStorage sessionDataStorage = new MemorySessionDataStorage();
+		SessionStrategy strategy = new CookieSessionStrategy() {
+			@Override
+			public String getRequestedSessionId(final HttpServletRequest httpServletRequest) {
+				String headerSessId = this.getSessionIdFromHeader(httpServletRequest);
+				if (headerSessId != null && !headerSessId.isEmpty()) {
+					return headerSessId;
+				}
+				return super.getRequestedSessionId(httpServletRequest);
+			}
+
+			private String getSessionIdFromHeader(HttpServletRequest request) {
+				return request.getHeader("Authorization");
+			}
+
+
+		};
+		ro.pippo.session.SessionManager sessionManager = new ro.pippo.session.SessionManager(sessionDataStorage,
+				strategy);
+
+		return new SessionRequestResponseFactory(this, sessionManager);
+	}
+
+	@Override
 	protected void onInit() {
-		this.addControllers(new LoginController(this.eveOAuth2Api, this.authenticatedCharacters));
-		this.addControllers(new CharacterInfoController());
-		FleetsApi fleetsApi = new FleetsApi();
-		Systems systems = new SystemsImpl();
-		Stations stations = new StationsImpl();
-		FleetMemberLocations fleetMemberLocations = new FleetMemberLocationsImpl(stations, systems, fleetsApi);
-		Types types = new TypesImpl();
-		FleetMembers fleetMembers = new FleetMembersImpl(fleetsApi, types, systems, fleetMemberLocations);
-		Characters characters = new CharactersImpl();
-		Fleets fleets = new FleetsImpl(fleetsApi, fleetMembers, characters);
-		this.addControllers(new FleetController(fleets));
+		LoginController loginController = new LoginController(this.eveOAuth2Api, this.authenticatedCharacters);
+		List<String> unsecured = loginController.unsecuredURIs().collect(Collectors.toList());
+		unsecured.add("/public.*");
 
 		ALL("/.*", routeContext -> {
 			log.info("Request for {} '{}' with: {}", routeContext.getRequestMethod(), routeContext.getRequestUri(),
 					routeContext.getRequest());
 			routeContext.next();
 		});
+		ALL("/.*", routeContext -> {
+			if (unsecured.stream().anyMatch(unsecuredUri -> Pattern.matches(unsecuredUri, routeContext
+					.getRequestUri()))) {
+				routeContext.next();
+			} else {
+				if (routeContext.getSession(AUTHENTICATED_SESSION_KEY) != null) {
+					routeContext.next();
+				} else {
+					routeContext.redirect("eveLogin", new HashMap<>());
+				}
+			}
+		});
+
+
+		this.addControllers(loginController);
+
+		FleetsApi fleetsApi = new FleetsApi();
+		Systems systems = new SystemsImpl();
+		CharacterApi characterApi = new CharacterApi();
+		Corporations corporations = new CorporationsImpl();
+		Portraits portraits = new PortraitsImpl(characterApi);
+		Stations stations = new StationsImpl();
+		FleetMemberLocations fleetMemberLocations = new FleetMemberLocationsImpl(stations, systems, fleetsApi);
+		Types types = new TypesImpl();
+		FleetMembers fleetMembers = new FleetMembersImpl(fleetsApi, types, systems, fleetMemberLocations);
+		Characters characters = new CharactersImpl(characterApi, corporations, portraits);
+		Fleets fleets = new FleetsImpl(fleetsApi, fleetMembers, characters);
+		this.addControllers(new FleetController(fleets));
+		this.addControllers(new CharacterInfoController(characters));
+		this.addPublicResourceRoute();
+
 	}
 }
 

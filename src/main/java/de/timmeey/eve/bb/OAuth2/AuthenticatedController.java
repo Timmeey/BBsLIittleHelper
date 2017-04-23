@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 @Slf4j
 public class AuthenticatedController extends Controller {
-	private final static String AUTHENTICATED_SESSION_KEY = "authenticatedCharacter";
+	public final static String AUTHENTICATED_SESSION_KEY = "authenticatedCharacter";
 
 	protected Optional<AuthenticatedCharacter> getCurrentAuthenticatedCharacter() {
 		return Optional.ofNullable(getRouteContext().getSession(AUTHENTICATED_SESSION_KEY));

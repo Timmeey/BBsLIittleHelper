@@ -1,11 +1,13 @@
 package de.timmeey.eve.bb;
 
+import de.timmeey.eve.bb.API.Character.Characters;
 import de.timmeey.eve.bb.OAuth2.AuthenticatedController;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.CharacterApi;
 import lombok.extern.slf4j.Slf4j;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
+import ro.pippo.controller.extractor.Param;
 
 /**
  * Created by timmeey on 16.04.17.
@@ -13,6 +15,12 @@ import ro.pippo.controller.Path;
 @Slf4j
 @Path("/")
 public class CharacterInfoController extends AuthenticatedController {
+
+	private final Characters characters;
+
+	public CharacterInfoController(final Characters characters) {
+		this.characters = characters;
+	}
 
 	@GET
 	public String showCharacterBasics() {
@@ -27,6 +35,11 @@ public class CharacterInfoController extends AuthenticatedController {
 			}
 		}).orElse("Not AUthenticated");
 
+	}
+
+	@GET("{characterId}")
+	public String getCharacterDetails(@Param long characterId) {
+		return characters.byId(characterId).toString();
 	}
 
 

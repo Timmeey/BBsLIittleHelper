@@ -1,15 +1,19 @@
-package de.timmeey.eve.bb;
+package de.timmeey.eve.bb.fleet;
 
 import de.timmeey.eve.bb.API.Fleet.Fleet;
 import de.timmeey.eve.bb.API.Fleet.Fleets;
 import de.timmeey.eve.bb.OAuth2.AuthenticatedController;
+import de.timmeey.eve.bb.fleet.dto.FleetRegistrationDTO;
+import lombok.extern.slf4j.Slf4j;
 import ro.pippo.controller.GET;
+import ro.pippo.controller.POST;
 import ro.pippo.controller.Path;
-import ro.pippo.controller.extractor.Param;
+import ro.pippo.controller.extractor.Bean;
 
 /**
  * Created by timmeey on 17.04.17.
  */
+@Slf4j
 @Path("/fleet")
 public class FleetController extends AuthenticatedController {
 	private final Fleets fleets;
@@ -18,9 +22,12 @@ public class FleetController extends AuthenticatedController {
 		this.fleets = fleets;
 	}
 
-	@GET("/{fleetId}")
-	public String getFleet(@Param("fleetId") long fleetId) throws Exception {
-		Fleet fleet = fleets.byId(fleetId, getCurrentAuthenticatedCharacter().get().accessToken());
+	@GET
+	public void getFleet() throws Exception {
+		Fleet fleet = this.getRouteContext().getSession("fleet");
+		if (fleet == null) {
+
+		}
 		StringBuilder resultBuilder = new StringBuilder().append(fleet.id()).append("\n");
 		fleet.members().forEach((fleetMember) -> {
 			try {
@@ -33,8 +40,14 @@ public class FleetController extends AuthenticatedController {
 
 			}
 		});
-		return resultBuilder.toString();
+	}
 
+	@POST
+	public void registerFleet(@Bean FleetRegistrationDTO fleetRegistration) throws Exception {
+		log.debug(fleetRegistration.toString());
+		Fleet fleet = fleets.byId(fleetRegistration.getFleetId(), getCurrentAuthenticatedCharacter().get().accessToken
+				());
 
+		this.getRouteContext().setSession("fleet", fleet);
 	}
 }
