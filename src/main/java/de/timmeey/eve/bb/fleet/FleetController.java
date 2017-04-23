@@ -4,11 +4,9 @@ import de.timmeey.eve.bb.API.Fleet.Fleet;
 import de.timmeey.eve.bb.API.Fleet.Fleets;
 import de.timmeey.eve.bb.OAuth2.AuthenticatedController;
 import de.timmeey.eve.bb.fleet.dto.FleetRegistrationDTO;
+import de.timmeey.eve.bb.spai.SpyMeasuredFleet;
 import lombok.extern.slf4j.Slf4j;
-import ro.pippo.controller.DELETE;
-import ro.pippo.controller.GET;
-import ro.pippo.controller.POST;
-import ro.pippo.controller.Path;
+import ro.pippo.controller.*;
 import ro.pippo.controller.extractor.Bean;
 import ro.pippo.controller.extractor.Param;
 
@@ -29,11 +27,17 @@ public class FleetController extends AuthenticatedController {
 	private Optional<Fleet> currentFleet() {
 		return Optional.ofNullable(this.getRouteContext().getSession("fleet"));
 	}
-	@GET
-	public void getFleet() throws Exception {
-		currentFleet().ifPresent(fleet -> {
 
-		});
+	@Produces(Produces.JSON)
+	@GET
+	public SpyMeasuredFleet getFleet() throws Exception {
+		log.debug("GetFleet called");
+		final Fleet fleet = fleets.byId(47918, getCurrentAuthenticatedCharacter().get().accessToken
+				());
+//		currentFleet().ifPresent(fleet1 -> {
+//			fleet[0] =fleet1;
+//		});
+		return fleet;
 
 	}
 
@@ -46,6 +50,7 @@ public class FleetController extends AuthenticatedController {
 				());
 
 		this.getRouteContext().setSession("fleet", fleet);
+		getRouteContext().getResponse().created().commit();
 	}
 
 	@DELETE("/member/{characterId}")

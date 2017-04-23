@@ -10,7 +10,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by timmeey on 16.04.17.
@@ -49,13 +50,13 @@ public class FleetImpl implements Fleet {
 	}
 
 	@Override
-	public Stream<FleetMember> members() throws Exception {
+	public List<FleetMember> members() throws Exception {
 		String accessString = accessToken.getAccessTokenString();
 		log.debug(accessString);
 		val response = fleetsApi.getFleetsFleetIdMembers(id, null, null, accessString, null, null);
 		return response.stream().map(fleetMemberResponse -> fleetMembers.byCharacter(characters.byId
 				(fleetMemberResponse
-						.getCharacterId()), this, accessToken));
+						.getCharacterId()), this, accessToken)).collect(Collectors.toList());
 	}
 
 	@Override

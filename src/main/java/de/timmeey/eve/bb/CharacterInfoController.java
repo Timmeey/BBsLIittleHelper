@@ -4,9 +4,11 @@ import de.timmeey.eve.bb.API.Character.Characters;
 import de.timmeey.eve.bb.OAuth2.AuthenticatedController;
 import io.swagger.client.ApiException;
 import io.swagger.client.api.CharacterApi;
+import io.swagger.client.model.GetCharactersCharacterIdOk;
 import lombok.extern.slf4j.Slf4j;
 import ro.pippo.controller.GET;
 import ro.pippo.controller.Path;
+import ro.pippo.controller.Produces;
 import ro.pippo.controller.extractor.Param;
 
 /**
@@ -22,22 +24,22 @@ public class CharacterInfoController extends AuthenticatedController {
 		this.characters = characters;
 	}
 
+	@Produces(Produces.JSON)
 	@GET
-	public String showCharacterBasics() {
+	public GetCharactersCharacterIdOk showCharacterBasics() {
 
-		return getCurrentAuthenticatedCharacter().map(c -> {
-			CharacterApi charApi = new CharacterApi();
-			try {
-				return charApi.getCharactersCharacterId((int) c.characterId(), null, null, null).toString();
-			} catch (ApiException e) {
-				e.printStackTrace();
-				return e.getMessage();
-			}
-		}).orElse("Not AUthenticated");
-
+		CharacterApi charApi = new CharacterApi();
+		try {
+			return charApi.getCharactersCharacterId((int) getCurrentAuthenticatedCharacter().get().characterId(),
+					null, null, null);
+		} catch (ApiException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	@GET("{characterId}")
+
+	@GET("character/{characterId}")
 	public String getCharacterDetails(@Param long characterId) {
 		return characters.byId(characterId).toString();
 	}

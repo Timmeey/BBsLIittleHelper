@@ -15,4 +15,27 @@ public interface Portrait {
 
 	URI px64() throws Exception;
 
+
+	class FakePortrait implements Portrait {
+
+		@Override
+		public URI px512() throws Exception {
+			return new URI("https://www.google.de");
+		}
+
+		@Override
+		public URI px256() throws Exception {
+			return new URI("https://www.google.de");
+		}
+
+		@Override
+		public URI px128() throws Exception {
+			return new URI("https://www.google.de");
+		}
+
+		@Override
+		public URI px64() throws Exception {
+			return new URI("https://www.google.de");
+		}
+	}
 }

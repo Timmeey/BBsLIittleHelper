@@ -4,6 +4,7 @@ import de.timmeey.eve.bb.API.Fleet.Fleet;
 import de.timmeey.eve.bb.API.Fleet.FleetMember;
 import de.timmeey.eve.bb.API.Fleet.FleetMembers;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -21,8 +22,9 @@ public class SpyMeasuredFleet implements Fleet {
 	}
 
 	public Stream<SpyMeasuredFleetMember> spyMeasuredMembers() throws Exception {
-		return parent.members().map(member -> new SpyMeasuredFleetMember(member, spyScores, this)).sorted((member1,
-																										   member2)
+		return parent.members().stream().map(member -> new SpyMeasuredFleetMember(member, spyScores, this)).sorted(
+				(member1,
+																													member2)
 				-> {
 			if (member1.spyScore().overallScore().isPresent() && member2.spyScore().overallScore().isPresent()) {
 				return Double.compare(member1.spyScore().overallScore().getAsDouble(), member2.spyScore().overallScore
@@ -34,7 +36,7 @@ public class SpyMeasuredFleet implements Fleet {
 	}
 
 	@Override
-	public Stream<FleetMember> members() throws Exception {
+	public List<FleetMember> members() throws Exception {
 		return parent.members();
 	}
 

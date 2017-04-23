@@ -6,4 +6,12 @@ package de.timmeey.eve.bb.API.Character;
 public interface Portraits {
 
 	Portrait byCharacter(Character character);
+
+	class FakePortraits implements Portraits {
+
+		@Override
+		public Portrait byCharacter(final Character character) {
+			return new Portrait.FakePortrait();
+		}
+	}
 }

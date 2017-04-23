@@ -6,4 +6,13 @@ package de.timmeey.eve.bb.API.Universe;
 public interface Stations {
 
 	Station byId(long id);
+
+
+	class FakeStations implements Stations {
+
+		@Override
+		public Station byId(final long id) {
+			return new Station.FakeStation("FakeStationName");
+		}
+	}
 }
